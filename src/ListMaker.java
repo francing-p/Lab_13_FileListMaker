@@ -5,8 +5,6 @@ import java.io.*;
 import java.nio.file.*;
 import static java.nio.file.StandardOpenOption.CREATE;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-
 public class ListMaker {
     static ArrayList<String> list = new ArrayList<>();
     static String item = "";
@@ -25,7 +23,6 @@ public class ListMaker {
                 addItem(in);
             } else if (menuChoice.equalsIgnoreCase("D")) {
                 deleteItem();
-                ;
             } else if (menuChoice.equalsIgnoreCase("I")) {
                 updItem(in);
             } else if (menuChoice.equalsIgnoreCase("V")) {
@@ -33,6 +30,7 @@ public class ListMaker {
             } else if (menuChoice.equalsIgnoreCase("M")) {
                 moveItem(in);
             } else if (menuChoice.equalsIgnoreCase("O")) {
+                // Forces save if an unsaved list is in existence
                 if (needsSaved) {
                     System.out.println("Your file has data that needs saved. ");
                     saveList();
@@ -46,6 +44,7 @@ public class ListMaker {
             // IF CHOICE IS QUIT, ENSURE USER WANTS TO DO SO
             else if (menuChoice.equalsIgnoreCase("Q")) {
                 confirm = SafeInput.getYNConfirm(in, "Are you sure? [Y/N] ");
+                // Check to make sure data has been saved first - if not, prompt save
                 if (needsSaved) {
                     System.out.println("Your file has data that needs saved. If this data is not saved, it will be lost. ");
                     save = SafeInput.getYNConfirm(in, "Save your data? [Y/N]");
@@ -97,7 +96,7 @@ public class ListMaker {
             item = pipe.nextLine();
             list.add(item);
         }
-        needsSaved = true;
+        needsSaved = true; // since a change has been made, the list needs saved
 
     }
 
@@ -109,7 +108,7 @@ public class ListMaker {
         index = SafeInput.getRangedInt(in, "Which index would you like to delete? ", 0, list.size());
         list.remove(index);
         in.nextLine();
-        needsSaved = true;
+        needsSaved = true; // since a change has been made, the list needs saved
     }
 
     private static void updItem(Scanner pipe) {
@@ -124,7 +123,7 @@ public class ListMaker {
             item = pipe.nextLine();
         }
         list.add(index, item);
-        needsSaved = true;
+        needsSaved = true; // since a change has been made, the list needs saved
     }
 
     private static void viewList() {
@@ -142,11 +141,11 @@ public class ListMaker {
         System.out.print("What item would you like to move? ");
         if (pipe.hasNextLine()) {
             item = pipe.nextLine();
-            list.remove(item);
+            list.remove(item); // removes the item from its current location
         }
         index = SafeInput.getRangedInt(in, "Which index would you like to move this item to? ", 0, list.size());
-        list.add(index, item);
-        needsSaved = true;
+        list.add(index, item); // adds item back at requested location
+        needsSaved = true; // since a change has been made, the list needs saved
         in.nextLine();
 
 
@@ -157,8 +156,6 @@ public class ListMaker {
         Path readFile = new File(System.getProperty("user.dir")).toPath(); // look through user directory
         readFile = readFile.resolve("src"); // look through java source, not looking at a specific file
         chooser.setCurrentDirectory(readFile.toFile());
-
-        // ------- MAIN PROGRAM --------
         try {
             if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) { // if the user has chosen a file, then do the following
                 readFile = chooser.getSelectedFile().toPath();
@@ -200,13 +197,13 @@ public class ListMaker {
         catch(IOException e){
             e.printStackTrace();
         }
-        needsSaved = false;
+        needsSaved = false; // list has been saved - needsSaved is now false
     }
 
     private static void clearList() {
-        list.clear();
+        list.clear(); // empties the entire list
         System.out.println("List has been cleared. ");
-        needsSaved = true;
+        needsSaved = true; // since a change has been made, the list needs saved
     }
 }
 
